@@ -31,6 +31,15 @@ venv\Scripts\python shared_mobility.py
 
 ```
 
+### Purpose
+
+This script get data from the swiss shared mobility provider.
+
+The webservices are described here: https://sharedmobility.ch/gbfs.json
+The 
+
+The explanation can be found here: https://github.com/SFOE/sharedmobility
+
 ### Disclaimer
 
 This is a really "simple" script. There is no logging, no error handling,
