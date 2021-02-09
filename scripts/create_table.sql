@@ -1,4 +1,4 @@
-CREATE TABLE mobilite.mob20_shared_mobility
+CREATE TABLE mobilite.mob021_shared_mobility
 (
     idobj character varying(500) NOT NULL,
     name character varying(500),
@@ -13,11 +13,11 @@ CREATE TABLE mobilite.mob20_shared_mobility
     provider_url character varying(500),
     store_uri_android character varying(500),
     store_uri_ios character varying(500),
-    CONSTRAINT mob20_shared_mobility_pkey PRIMARY KEY (idobj)
+    CONSTRAINT mob021_shared_mobility_pkey PRIMARY KEY (idobj)
 )
 WITH (
     OIDS = FALSE
 );
 
-SELECT AddGeometryColumn ('mobilite', 'mob20_shared_mobility', 'geom', 2056, 'POINT', 2);
+SELECT AddGeometryColumn ('mobilite', 'mob021_shared_mobility', 'geom', 2056, 'POINT', 2);
  

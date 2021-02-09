@@ -14,4 +14,4 @@ connection_params:
   user: the_user
   password: the_user_password
 
-tablename: mobilite.mob20_shared_mobility
+tablename: mobilite.mob021_shared_mobility
