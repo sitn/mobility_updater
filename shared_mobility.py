@@ -4,6 +4,8 @@ import psycopg2
 import sys
 from yaml import load, FullLoader
 from argparse import ArgumentParser
+from mobility.db_runner import run_sql, get_once
+
 
 def get_data(args):
 
@@ -13,20 +15,12 @@ def get_data(args):
         params = load(file, Loader=FullLoader)
 
     bbox = params['bbox']
-    connection_params = params['connection_params']
     providers_info_url = params['providers_info_url']
     station_info_url = params['station_info_url']
     station_status_url = params['station_status_url']
-    tablename = params['tablename']
+    tablename = params['shared_station_tablename']
 
-    connection = psycopg2.connect(
-        host = connection_params['host'],
-        database = connection_params['db'],
-        user = connection_params['user'],
-        password = connection_params['password']
-    )
-
-    cursor= connection.cursor()
+    servers = params['servers']
 
     # Get Stations
     r = requests.get(station_info_url)
@@ -42,11 +36,13 @@ def get_data(args):
     INSERT INTO %s (idobj, "name", provider_id, geom) VALUES ('%s', '%s', '%s', %s) ON CONFLICT DO NOTHING
     """
 
+    station_sql_list = []
+
     for station in stations:
         if station['lon'] >= bbox['xmin'] and station['lon'] <= bbox['xmax'] \
             and station['lat'] >= bbox['ymin'] and station ['lat'] <= bbox['ymax']:
                 station_ids.append(station['station_id'])
-                cursor.execute(station_sql % (
+                station_sql_list.append(station_sql % (
                     tablename,
                     station['station_id'], 
                     station['name'].replace("'", "''"), 
@@ -54,14 +50,13 @@ def get_data(args):
                     "ST_Transform(ST_GeomFromText('POINT("+ str(station['lon']) + " " + str(station['lat']) +")', 4326), 2056)"
                 ))
 
-    connection.commit()
+    run_sql(servers, station_sql_list)
 
-    # Check uris
+    # Check uris (we use the first server to do so, as they all should contain the same data)
     url_sql = """
     SELECT provider_id FROM %s WHERE provider_url is null
     """
-    cursor.execute(url_sql % (tablename))
-    records = cursor.fetchall()
+    records = get_once(servers[0], (url_sql % tablename))
 
     update_urls_sql = """
     UPDATE %s SET 
@@ -80,6 +75,8 @@ def get_data(args):
 
         providers = r.json()['data']['providers']
         done = []
+        
+        provider_sql_list = []
 
         for record in records:
             
@@ -88,7 +85,7 @@ def get_data(args):
                 if len(provider) == 0:
                     continue
                 provider = provider[0]
-                cursor.execute(update_urls_sql % (
+                provider_sql_list.append(update_urls_sql % (
                     tablename,
                     provider['url'] if 'url' in provider else '-9999',
                     provider['rental_apps']['android']['store_uri'] if 'rental_apps' in provider else '-9999',
@@ -98,7 +95,7 @@ def get_data(args):
                 
                 done.append(record[0])
         
-        connection.commit()
+        run_sql(servers, provider_sql_list)
 
     # Check vehicle availability
     r = requests.get(station_status_url)
@@ -122,7 +119,9 @@ def get_data(args):
     """
 
     now = datetime.now().isoformat()
-
+    
+    station_sql_list = []
+    
     for station_id in station_ids:
         station = list(filter(lambda x:x["station_id"]==station_id,stations))
         
@@ -131,7 +130,7 @@ def get_data(args):
         
         station = station[0]
         
-        cursor.execute(station_sql % (
+        station_sql_list.append(station_sql % (
             tablename,
             str(station['is_installed']), 
             str(station['is_renting']),
@@ -143,10 +142,7 @@ def get_data(args):
             station['station_id'], 
         ))
 
-    connection.commit()
-
-    cursor.close()
-    connection.close()
+    run_sql(servers, station_sql_list)
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__)
