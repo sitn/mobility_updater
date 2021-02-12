@@ -8,6 +8,10 @@ from mobility.db_runner import run_sql
 def get_data(args):
 
     config_file = args.filename
+    
+    certificate = True
+    if args.certificate_verification == 'off':
+        certificate = False
 
     with open(config_file) as file:
         params = load(file, Loader=FullLoader)
@@ -20,7 +24,7 @@ def get_data(args):
     servers = params['servers']
 
     # Get everything...
-    r = requests.get(electric_station_url, verify=False)
+    r = requests.get(electric_station_url, verify=certificate)
 
     if r.status_code != 200:
         sys.exit(1)
@@ -81,6 +85,13 @@ if __name__ == '__main__':
         '--filename',
         help='filename of the config file (optional, default would be config.yml)',
         default='config.yml',
+        action='store'
+    )
+    parser.add_argument(
+        '-c',
+        '--certificate_verification',
+        help='Turns off the HTTPS certificate verification (default is "on")',
+        default='on',
         action='store'
     )
     args = parser.parse_args()

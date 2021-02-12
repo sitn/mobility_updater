@@ -11,6 +11,10 @@ def get_data(args):
 
     config_file = args.filename
 
+    certificate = True
+    if args.certificate_verification == 'off':
+        certificate = False
+
     with open(config_file) as file:
         params = load(file, Loader=FullLoader)
 
@@ -23,7 +27,7 @@ def get_data(args):
     servers = params['servers']
 
     # Get Stations
-    r = requests.get(station_info_url)
+    r = requests.get(station_info_url, verify=certificate)
 
     if r.status_code != 200:
         sys.exit(1)
@@ -68,7 +72,7 @@ def get_data(args):
     """
 
     if len(records) > 0:
-        r = requests.get(providers_info_url)
+        r = requests.get(providers_info_url, verify=certificate)
 
         if r.status_code != 200:
             sys.exit(1)
@@ -98,7 +102,7 @@ def get_data(args):
         run_sql(servers, provider_sql_list)
 
     # Check vehicle availability
-    r = requests.get(station_status_url)
+    r = requests.get(station_status_url, verify=certificate)
 
     if r.status_code != 200:
         sys.exit(1)
@@ -151,6 +155,13 @@ if __name__ == '__main__':
         '--filename',
         help='filename of the config file (optional, default would be config.yml)',
         default='config.yml',
+        action='store'
+    )
+    parser.add_argument(
+        '-c',
+        '--certificate_verification',
+        help='Turns off the HTTPS certificate verification (default is "on")',
+        default='on',
         action='store'
     )
     args = parser.parse_args()
