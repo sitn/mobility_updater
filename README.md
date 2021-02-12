@@ -34,6 +34,11 @@ venv\Scripts\python shared_mobility.py
 
 for the electric station part (https://github.com/SFOE/DIEMO-Documentation):
 
+```
+venv\Scripts\python electric_mobility.py
+
+```
+
 ### Purpose
 
 The `shared_mobility.py` script gets data from the swiss shared mobility provider.
