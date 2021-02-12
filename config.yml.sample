@@ -7,6 +7,7 @@ bbox:
 providers_info_url: "https://sharedmobility.ch/providers.json"
 station_info_url: "https://sharedmobility.ch/station_information.json"
 station_status_url: "https://sharedmobility.ch/station_status.json"
+electric_station_url: "https://data.geo.admin.ch/ch.bfe.ladestellen-elektromobilitaet/data/ch.bfe.ladestellen-elektromobilitaet_fr.json"
 
 connection_params:
   host: localhost
@@ -15,3 +16,4 @@ connection_params:
   password: the_user_password
 
 tablename: mobilite.mob021_shared_mobility
+electric_station_tablename: mobilite.mob022_electric_stations
