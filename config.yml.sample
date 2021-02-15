@@ -14,6 +14,15 @@ connection_params:
   db: your_db
   user: the_user
   password: the_user_password
+servers:
+  - host: host1
+    db: your_db1
+    user: the_user
+    password: the_user_password
+  - host: host2
+    db: your_db2
+    user: the_user
+    password: the_user_password
 
-tablename: mobilite.mob021_shared_mobility
+shared_station_tablename: mobilite.mob021_shared_mobility
 electric_station_tablename: mobilite.mob022_electric_stations

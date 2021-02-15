@@ -23,22 +23,32 @@ That's it
 
 ### Run it
 
-cmd or powershell, `cd` to your `shared_mobility_updater` folder and:
+cmd or powershell, `cd` to your `shared_mobility_updater` folder and
 
+for the shared mobility part (https://github.com/SFOE/sharedmobility):
 
 ```
 venv\Scripts\python shared_mobility.py
 
 ```
 
+for the electric station part (https://github.com/SFOE/DIEMO-Documentation):
+
+```
+venv\Scripts\python electric_mobility.py
+
+```
+
 ### Purpose
 
-This script get data from the swiss shared mobility provider.
+The `shared_mobility.py` script gets data from the swiss shared mobility provider.
 
 The webservices are described here: https://sharedmobility.ch/gbfs.json
 The 
 
 The explanation can be found here: https://github.com/SFOE/sharedmobility
+
+The `electric_mobility.py` script gets data out of https://data.geo.admin.ch/ch.bfe.ladestellen-elektromobilitaet/data/ch.bfe.ladestellen-elektromobilitaet_fr.json
 
 ### Disclaimer
 
