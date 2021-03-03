@@ -1,9 +1,21 @@
 import requests
 from datetime import datetime
+import logging
+import os
 import sys
 from yaml import load, FullLoader
 from argparse import ArgumentParser
 from mobility.db_runner import run_sql
+
+current_path = os.getcwd()
+
+logging.basicConfig(
+    filename=os.path.join(current_path, 'logs/electric_mobility.log'),
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG,
+    filemode='w'
+)
+
 
 def get_data(args):
 
@@ -26,8 +38,10 @@ def get_data(args):
     # Get everything...
     r = requests.get(electric_station_url, verify=certificate)
 
+    logging.info('Status code of electric mobility: %s' % r.status_code)
+
     if r.status_code != 200:
-        sys.exit(1)
+        sys.exit()
     
     features = r.json()['features']
     

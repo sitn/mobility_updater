@@ -26,3 +26,6 @@ servers:
 
 shared_station_tablename: mobilite.mob021_shared_mobility
 electric_station_tablename: mobilite.mob022_electric_stations
+
+# number of hours before we suppose something is going wrong
+update_timeout: 24

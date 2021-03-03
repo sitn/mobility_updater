@@ -1,10 +1,21 @@
 import requests
 from datetime import datetime
+import logging
+import os
 import psycopg2
 import sys
 from yaml import load, FullLoader
 from argparse import ArgumentParser
 from mobility.db_runner import run_sql, get_once
+
+current_path = os.getcwd()
+
+logging.basicConfig(
+    filename=os.path.join(current_path, 'logs/shared_mobility.log'),
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG,
+    filemode='w'
+)
 
 
 def get_data(args):
@@ -30,7 +41,9 @@ def get_data(args):
     r = requests.get(station_info_url, verify=certificate)
 
     if r.status_code != 200:
-        sys.exit(1)
+        sys.exit()
+
+    logging.info('Status code of shared mobility, get stations: %s' % r.status_code)
 
     stations = r.json()['data']['stations']
 
@@ -74,8 +87,10 @@ def get_data(args):
     if len(records) > 0:
         r = requests.get(providers_info_url, verify=certificate)
 
+        logging.info('Status code of shared mobility, get provider info: %s' % r.status_code)
+
         if r.status_code != 200:
-            sys.exit(1)
+            sys.exit()
 
         providers = r.json()['data']['providers']
         done = []
@@ -104,8 +119,10 @@ def get_data(args):
     # Check vehicle availability
     r = requests.get(station_status_url, verify=certificate)
 
+    logging.info('Status code of shared mobility, get provider availability: %s' % r.status_code)
+
     if r.status_code != 200:
-        sys.exit(1)
+        sys.exit()
 
     stations = r.json()['data']['stations']
 
