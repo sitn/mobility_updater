@@ -1,14 +1,26 @@
 import requests
 from datetime import datetime
+import logging
+import os
 import sys
 from yaml import load, FullLoader
 from argparse import ArgumentParser
 from mobility.db_runner import run_sql
 
+current_path = os.getcwd()
+
+logging.basicConfig(
+    filename=os.path.join(current_path, 'logs/electric_mobility.log'),
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG,
+    filemode='w'
+)
+
+
 def get_data(args):
 
     config_file = args.filename
-    
+
     certificate = True
     if args.certificate_verification == 'off':
         certificate = False
@@ -26,11 +38,13 @@ def get_data(args):
     # Get everything...
     r = requests.get(electric_station_url, verify=certificate)
 
+    logging.info('Status code of electric mobility: %s' % r.status_code)
+
     if r.status_code != 200:
-        sys.exit(1)
-    
+        sys.exit()
+
     features = r.json()['features']
-    
+
     locations = []
 
     location_sql = "INSERT INTO %s (idobj, geom) VALUES ('%s', %s) ON CONFLICT DO NOTHING"
@@ -42,25 +56,25 @@ def get_data(args):
         lat = feature['geometry']['coordinates'][1]
 
         if lon >= bbox['xmin'] and lon <= bbox['xmax'] \
-            and lat >= bbox['ymin'] and lat <= bbox['ymax']:
+                and lat >= bbox['ymin'] and lat <= bbox['ymax']:
             locations.append(feature)
             location_sql_list.append(location_sql % (
                 tablename,
-                feature['id'], 
-                "ST_Transform(ST_GeomFromText('POINT("+ str(lon) + " " + str(lat) +")', 4326), 2056)"
+                feature['id'],
+                "ST_Transform(ST_GeomFromText('POINT(" + str(lon) + " " + str(lat) + ")', 4326), 2056)"
             ))
 
     run_sql(servers, location_sql_list)
 
     update_urls_sql = """
-    UPDATE %s SET 
+    UPDATE %s SET
         description = '%s',
         availability = '%s',
         update_time = '%s'
     WHERE
         idobj = '%s'
     """
-    
+
     location_sql_list = []
     now = datetime.now().isoformat()
 
@@ -70,13 +84,14 @@ def get_data(args):
 
         location_sql_list.append(update_urls_sql % (
             tablename,
-            description, 
+            description,
             location['properties']['Availability'],
             now,
-            location['id'], 
+            location['id'],
         ))
 
     run_sql(servers, location_sql_list)
+
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__)
