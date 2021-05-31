@@ -132,7 +132,6 @@ def get_data(args):
         is_returning = %s,
         last_reported = '%s',
         num_bikes_available = %s,
-        num_docks_available = %s,
         update_time = '%s'
     WHERE
         idobj = '%s'
@@ -157,7 +156,6 @@ def get_data(args):
             str(station['is_returning']),
             datetime.fromtimestamp(station['last_reported']).isoformat(),
             str(station['num_bikes_available']),
-            str(station['num_docks_available']),
             now,
             station['station_id'],
         ))
