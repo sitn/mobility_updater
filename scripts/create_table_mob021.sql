@@ -7,7 +7,6 @@ CREATE TABLE mobilite.mob021_shared_mobility
     is_renting boolean,
     is_returning boolean,
     num_bikes_available integer,
-    num_docks_available integer,
     update_time timestamp without time zone,
     last_reported timestamp without time zone,
     provider_url character varying(500),
