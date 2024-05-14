@@ -1,7 +1,8 @@
-certifi==2020.12.5
-chardet==4.0.0
-idna==2.10
-psycopg2==2.8.6
-PyYAML==5.4.1
-requests==2.25.1
-urllib3==1.26.3
+certifi==2024.2.2
+chardet==5.2.0
+charset-normalizer==3.3.2
+idna==3.7
+psycopg2==2.9.9
+PyYAML==6.0.1
+requests==2.31.0
+urllib3==2.2.1
