@@ -4,9 +4,11 @@ bbox:
   ymin: 46.82852
   ymax: 47.19230 
 
-providers_info_url: "https://sharedmobility.ch/providers.json"
-station_info_url: "https://sharedmobility.ch/station_information.json"
-station_status_url: "https://sharedmobility.ch/station_status.json"
+base_station_url: "https://gbfs.prod.sharedmobility.ch/v2/gbfs"
+station_info_url: "station_information"
+station_status_url: "station_status"
+authorization_email: "example@example.com"
+
 electric_station_url: "https://data.geo.admin.ch/ch.bfe.ladestellen-elektromobilitaet/data/ch.bfe.ladestellen-elektromobilitaet_fr.json"
 
 connection_params:
