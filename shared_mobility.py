@@ -37,7 +37,7 @@ def get_providers_stations(base_station_url, certificate, payload, station_info_
         stations = r.json()['data']['stations']
 
         station_sql = """
-        INSERT INTO %s (idobj, "name", provider_id, geom, store_uri_android, store_uri_ios) VALUES ('%s', '%s', '%s', %s, '%s', '%s')
+        INSERT INTO %s (idobj, "name", provider_id, geom, store_uri_android, store_uri_ios) VALUES ('%s', '%s', '%s', %s, %s, %s)
         ON CONFLICT (idobj) DO UPDATE SET
         "name" = EXCLUDED."name",
         store_uri_android = EXCLUDED.store_uri_android,
@@ -56,8 +56,8 @@ def get_providers_stations(base_station_url, certificate, payload, station_info_
                     station['name'].replace("'", "''"),
                     system['id'],
                     "ST_Transform(ST_GeomFromText('POINT(" + str(station['lon']) + " " + str(station['lat']) + ")', 4326), 2056)",
-                    station['rental_uris']['android'] if 'rental_uris' in station else None,
-                    station['rental_uris']['ios'] if 'rental_uris' in station else None,
+                    "'"+station['rental_uris']['android']+"'" if 'rental_uris' in station else "null",
+                    "'"+station['rental_uris']['ios']+"'" if 'rental_uris' in station else "null",
                 ))
                 if system['id'] not in provider_ids:
                     provider_ids.append(system['id'])

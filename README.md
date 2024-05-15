@@ -9,8 +9,8 @@ Python 3.6+
 * Get the code and create the virtual environment:
 
 ```
-git clone https://github.com/sitn/shared_mobility_updater.git
-cd shared_mobility_updater
+git clone https://github.com/sitn/mobility_updater.git
+cd mobility_updater
 python -m venv venv
 venv\Scripts\pip install -r requirements.txt
 ```
@@ -39,9 +39,8 @@ venv\Scripts\python electric_mobility.py
 
 ## Purpose
 
-The `shared_mobility.py` script gets data from the national shared mobility platform:
-- The webservices are described [here](https://sharedmobility.ch/gbfs.json)
-- The explanation can be found [here](https://github.com/SFOE/sharedmobility)
+The `shared_mobility.py` script gets data from the national shared mobility platform.
+The explanation can be found [here](https://github.com/SFOE/sharedmobility)
 
 The `electric_mobility.py` script gets data from the national data infrastructure For electromobility:
 - Data access is described [here](https://github.com/SFOE/ichtankestrom_Documentation/blob/main/Access%20Download%20the%20data.md)
