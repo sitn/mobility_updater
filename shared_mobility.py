@@ -57,13 +57,11 @@ def get_providers_stations(base_station_url, certificate, payload, station_info_
                 android_url = "null"
                 ios_url = "null"
                 if 'rental_apps' in system_data:
-                    print(system_data)
-                    android_url = system_data['rental_apps']['android']['store_uri']
-                    ios_url = system_data['rental_apps']['ios']['store_uri']
+                    android_url = "'" + system_data['rental_apps']['android']['store_uri'] + "'"
+                    ios_url = "'" + system_data['rental_apps']['ios']['store_uri'] + "'"
                 elif 'rental_uris' in station:
-                    print(station)
-                    android_url = station['rental_uris']['android']
-                    ios_url = station['rental_uris']['ios']
+                    android_url = "'" + station['rental_uris']['android'] + "'"
+                    ios_url = "'" + station['rental_uris']['ios'] + "'"
 
                 station_ids.append(station['station_id'])
                 station_sql_list.append(station_sql % (
