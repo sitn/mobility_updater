@@ -7,6 +7,7 @@ bbox:
 base_station_url: "https://gbfs.prod.sharedmobility.ch/v2/gbfs"
 station_info_url: "station_information"
 station_status_url: "station_status"
+system_information_url: "system_information"
 authorization_email: "example@example.com"
 
 electric_station_url: "https://data.geo.admin.ch/ch.bfe.ladestellen-elektromobilitaet/data/ch.bfe.ladestellen-elektromobilitaet_fr.json"
