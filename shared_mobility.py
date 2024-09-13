@@ -16,7 +16,7 @@ logging.basicConfig(
     filemode='w'
 )
 
-def get_providers_stations(base_station_url, certificate, payload, station_info_url, bbox, tablename, servers):
+def get_providers_stations(base_station_url, certificate, payload, station_info_url, system_information_url, bbox, tablename, servers):
 
     r = requests.get(base_station_url, verify=certificate, params=payload)
 
@@ -32,12 +32,17 @@ def get_providers_stations(base_station_url, certificate, payload, station_info_
     station_sql_list = []
 
     for system in system_list:
+        
+        r0 = requests.get(base_station_url+'/'+system['id']+'/'+system_information_url, verify=certificate, params=payload)
+
+        system_data = r0.json()['data']
 
         r = requests.get(base_station_url+'/'+system['id']+'/'+station_info_url, verify=certificate, params=payload)
         stations = r.json()['data']['stations']
 
         station_sql = """
-        INSERT INTO %s (idobj, "name", provider_id, geom, store_uri_android, store_uri_ios) VALUES ('%s', '%s', '%s', %s, %s, %s)
+        INSERT INTO %s (idobj, "name", provider_id, provider_name, provider_url, geom, store_uri_android, store_uri_ios) VALUES (
+        '%s', '%s', '%s', '%s', '%s', %s, %s, %s)
         ON CONFLICT (idobj) DO UPDATE SET
         "name" = EXCLUDED."name",
         store_uri_android = EXCLUDED.store_uri_android,
@@ -48,6 +53,15 @@ def get_providers_stations(base_station_url, certificate, payload, station_info_
 
             if station['lon'] >= bbox['xmin'] and station['lon'] <= bbox['xmax'] \
                     and station['lat'] >= bbox['ymin'] and station['lat'] <= bbox['ymax']:
+                
+                android_url = "null"
+                ios_url = "null"
+                if 'rental_apps' in system_data:
+                    android_url = "'" + system_data['rental_apps']['android']['store_uri'] + "'"
+                    ios_url = "'" + system_data['rental_apps']['ios']['store_uri'] + "'"
+                elif 'rental_uris' in station:
+                    android_url = "'" + station['rental_uris']['android'] + "'"
+                    ios_url = "'" + station['rental_uris']['ios'] + "'"
 
                 station_ids.append(station['station_id'])
                 station_sql_list.append(station_sql % (
@@ -55,9 +69,11 @@ def get_providers_stations(base_station_url, certificate, payload, station_info_
                     station['station_id'],
                     station['name'].replace("'", "''"),
                     system['id'],
+                    system_data['name'],
+                    system_data['url'] if 'url' in system_data else "null",
                     "ST_Transform(ST_GeomFromText('POINT(" + str(station['lon']) + " " + str(station['lat']) + ")', 4326), 2056)",
-                    "'"+station['rental_uris']['android']+"'" if 'rental_uris' in station else "null",
-                    "'"+station['rental_uris']['ios']+"'" if 'rental_uris' in station else "null",
+                    android_url,
+                    ios_url,
                 ))
                 if system['id'] not in provider_ids:
                     provider_ids.append(system['id'])
@@ -94,12 +110,13 @@ def get_data(args):
     base_station_url = params['base_station_url']
     station_info_url = params['station_info_url']
     station_status_url = params['station_status_url']
+    system_information_url = params['system_information_url']
     payload = {'authorization': params['authorization_email']}
     tablename = params['shared_station_tablename']
     servers = params['servers']
 
     if station_only is False:
-        get_providers_stations(base_station_url, certificate, payload, station_info_url, bbox, tablename, servers)
+        get_providers_stations(base_station_url, certificate, payload, station_info_url, system_information_url, bbox, tablename, servers)
 
     updated_stations = []
 

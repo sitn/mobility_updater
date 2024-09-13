@@ -3,6 +3,8 @@ CREATE TABLE mobilite.mob021_shared_mobility
     idobj character varying(500) NOT NULL,
     name character varying(500),
     provider_id character varying(500),
+    provider_name character varying(500),
+    provider_url character varying(500),
     is_installed boolean,
     is_renting boolean,
     is_returning boolean,
